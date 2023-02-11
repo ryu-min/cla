@@ -1,5 +1,7 @@
 #pragma once
 
+#include "argument_description.h"
+
 #include <iostream>
 #include <string>
 #include <map>
@@ -9,39 +11,9 @@
 #include <cassert>
 
 /// cla - command line arguments
-
-struct ArgumentDesctiption {
-
-    std::string argName;
-    char argShortName;
-    bool required;
-    std::string desciption;
-
-    bool operator==(ArgumentDesctiption other ) const {
-        return argName == other.argName;
-    }
-
-};
-
-
-namespace std {
-    template <>
-    struct hash<ArgumentDesctiption> {
-        size_t operator ()( const ArgumentDesctiption & value) const {
-            std::hash<std::string> hasher;
-            return hasher( value.argName );
-        }
-    };
-}
-
-
-
 namespace cla {
 
     class parser {
-
-    public:
-
 
     private:
 
@@ -110,8 +82,6 @@ namespace cla {
             }
             return result;
         }
-
-
 
         enum class ParsingState {
             READ_ARG_NAME,
