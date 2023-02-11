@@ -7,6 +7,7 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
+#include <set>
 #include <algorithm>
 #include <cassert>
 
@@ -25,11 +26,13 @@ namespace cla {
 
         parser() {}
 
-        parser & addPositional( const std::string & longName,
-                                char shortName,
-                                const std::string & description ) {
+        parser & addPositional( const std::string & description )
+        {
+            PositionalArgumentDescription argDesctiptions {
+                (unsigned int)m_registeredPositionalArgs.size(), description
+            };
+            m_registeredPositionalArgs.insert( argDesctiptions );
             return *this;
-
         }
 
         parser & addOptional( const std::string & longName,
@@ -73,7 +76,7 @@ namespace cla {
         }
 
 
-        void parse( int argc, const char ** argv ) {
+        parser & parse( int argc, const char ** argv ) {
 
             int index = 0;
             ParsingState state = ParsingState::READ_ARG_NAME;
@@ -100,6 +103,11 @@ namespace cla {
                         }
                         else {
                             m_parsedPositionalArgs.insert( currentString );
+                            if ( m_parsedNamedArgs.size() > m_registeredPositionalArgs.size() )
+                            {
+                                std::cout << "unregistered positional arg " << currentString << std::endl;
+                                exit(-1);
+                            }
                         }
                     } break;
 
@@ -142,6 +150,7 @@ namespace cla {
                 index++;
                 continue;
             }
+            return *this;
         }
 
 
@@ -221,8 +230,9 @@ namespace cla {
          * @brief m_parsedNamedArgs longArgName -> argValue
          */
         std::unordered_map<std::string, std::string> m_parsedNamedArgs;
-        std::unordered_set<std::string> m_parsedPositionalArgs;
+        std::set<std::string> m_parsedPositionalArgs;
         std::unordered_set<ArgumentDesctiption> m_registeredArgs;
+        std::set<PositionalArgumentDescription> m_registeredPositionalArgs;
     };
 }
 

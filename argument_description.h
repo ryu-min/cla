@@ -11,8 +11,18 @@ namespace cla
         bool required;
         std::string desciption;
 
-        bool operator==(ArgumentDesctiption other ) const {
+        bool operator==( const ArgumentDesctiption & other ) const {
             return argName == other.argName;
+        }
+    };
+
+    struct PositionalArgumentDescription
+    {
+        unsigned int pos; // start from 0
+        std::string description;
+
+        bool operator<( const PositionalArgumentDescription & other ) const {
+            return pos < other.pos;
         }
     };
 }

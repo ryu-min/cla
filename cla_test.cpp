@@ -15,16 +15,17 @@ private slots:
 
 void cla_test::test_case1()
 {
-    parser p;
 
     int argc = 6;
     const char * argv[] = {"--key1", "value", "--key2", "value2", "pos1", "pos2"};
 
-    p.addRequired("key1", 'k', "some description");
-    p.addRequired("key2", 'c', "some description");
-
-    p.parse(argc, argv);
-    p.dump();
+    parser()
+            .addRequired("key1", 'k', "some description")
+            .addRequired("key2", 'c', "some description")
+            .addPositional("some another pos description")
+            .addPositional("some another pos description")
+            .parse(argc, argv)
+            .dump();
 
     QVERIFY(true);
 }
