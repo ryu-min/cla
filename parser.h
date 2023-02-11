@@ -15,74 +15,6 @@ namespace cla {
 
     class parser {
 
-    private:
-
-        /**
-         * @brief m_parsedNamedArgs longArgName -> argValue
-         */
-        std::unordered_map<std::string, std::string> m_parsedNamedArgs;
-
-        std::unordered_set<std::string> m_parsedPositionalArgs;
-        std::unordered_set<ArgumentDesctiption> m_registeredArgs;
-
-        bool isLongNameRegistered( const std::string & longName )
-        {
-            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
-                                            [&longName](const ArgumentDesctiption & arg) {
-                 return arg.argName == longName;
-            });
-            return argIt != m_registeredArgs.end();
-        }
-
-        bool isShortNameRegistered( char shortName )
-        {
-            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
-                                            [shortName](const ArgumentDesctiption & arg) {
-                 return arg.argShortName == shortName;
-            });
-            return argIt != m_registeredArgs.end();
-        }
-
-        std::string shortNameToLong( char shortName )
-        {
-            std::string longName;
-            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
-                                            [shortName](const ArgumentDesctiption & arg) {
-                 return arg.argShortName == shortName;
-            });
-            if ( argIt != m_registeredArgs.end() ) {
-                longName = argIt->argName;
-            }
-            return longName;
-        }
-
-        ArgumentDesctiption getArgForShortName( char shortName )
-        {
-            ArgumentDesctiption result;
-            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
-                                       [shortName](const ArgumentDesctiption & arg) {
-                return arg.argShortName == shortName;
-            });
-            if ( argIt != m_registeredArgs.end() ) {
-                result = *argIt;
-            }
-            return result;
-        }
-
-
-        ArgumentDesctiption getArgForLongName( const std::string & longName )
-        {
-            ArgumentDesctiption result;
-            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
-                                       [longName](const ArgumentDesctiption & arg) {
-                return arg.argName == longName;
-            });
-            if ( argIt != m_registeredArgs.end() ) {
-                result = *argIt;
-            }
-            return result;
-        }
-
         enum class ParsingState {
             READ_ARG_NAME,
             READ_LONG_NAMED_ARG_VALUE,
@@ -94,15 +26,15 @@ namespace cla {
         parser() {}
 
         parser & addPositional( const std::string & longName,
-                            char shortName,
-                            const std::string & description ) {
+                                char shortName,
+                                const std::string & description ) {
             return *this;
 
         }
 
         parser & addOptional( const std::string & longName,
-                          char shortName,
-                          const std::string & description )
+                              char shortName,
+                              const std::string & description )
         {
             if ( isLongNameRegistered(longName) )
             {
@@ -122,8 +54,8 @@ namespace cla {
         }
 
         parser & addRequired( const std::string & longName,
-                          char shortName,
-                          const std::string & description )
+                              char shortName,
+                              const std::string & description )
         {
             if ( isLongNameRegistered(longName) ) {
                 std::cout << "argument with long name " << std::string(longName) << " already registered" << std::endl;
@@ -225,6 +157,72 @@ namespace cla {
             }
         }
 
+    private:
+        bool isLongNameRegistered( const std::string & longName )
+        {
+            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
+                                       [&longName](const ArgumentDesctiption & arg) {
+                return arg.argName == longName;
+            });
+            return argIt != m_registeredArgs.end();
+        }
+
+        bool isShortNameRegistered( char shortName )
+        {
+            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
+                                       [shortName](const ArgumentDesctiption & arg) {
+                return arg.argShortName == shortName;
+            });
+            return argIt != m_registeredArgs.end();
+        }
+
+        std::string shortNameToLong( char shortName )
+        {
+            std::string longName;
+            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
+                                       [shortName](const ArgumentDesctiption & arg) {
+                return arg.argShortName == shortName;
+            });
+            if ( argIt != m_registeredArgs.end() ) {
+                longName = argIt->argName;
+            }
+            return longName;
+        }
+
+        ArgumentDesctiption getArgForShortName( char shortName )
+        {
+            ArgumentDesctiption result;
+            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
+                                       [shortName](const ArgumentDesctiption & arg) {
+                return arg.argShortName == shortName;
+            });
+            if ( argIt != m_registeredArgs.end() ) {
+                result = *argIt;
+            }
+            return result;
+        }
+
+
+        ArgumentDesctiption getArgForLongName( const std::string & longName )
+        {
+            ArgumentDesctiption result;
+            auto argIt = std::find_if( m_registeredArgs.begin(), m_registeredArgs.end(),
+                                       [longName](const ArgumentDesctiption & arg) {
+                return arg.argName == longName;
+            });
+            if ( argIt != m_registeredArgs.end() ) {
+                result = *argIt;
+            }
+            return result;
+        }
+
+    private:
+        /**
+         * @brief m_parsedNamedArgs longArgName -> argValue
+         */
+        std::unordered_map<std::string, std::string> m_parsedNamedArgs;
+        std::unordered_set<std::string> m_parsedPositionalArgs;
+        std::unordered_set<ArgumentDesctiption> m_registeredArgs;
     };
 }
 
