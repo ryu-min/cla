@@ -5,7 +5,6 @@
 namespace cla
 {
     struct ArgumentDesctiption {
-
         std::string argName;
         char argShortName;
         bool required;

@@ -16,17 +16,30 @@ private slots:
 void cla_test::test_case1()
 {
 
-    int argc = 6;
-    const char * argv[] = {"--key1", "value", "--key2", "value2", "pos1", "pos2"};
+    int argc = 8;
+    const char * argv[] = {"--string", "test_value" } ;//, "--int", "42", "--double", "42.42"};
 
-    parser()
-            .addRequired("key1", 'k', "some description")
-            .addRequired("key2", 'c', "some description")
-            .addPositional("some another pos description")
-            .addPositional("some another pos description")
-            .parse(argc, argv)
-            .dump();
+    std::string stringValue;
+    int intValue;
+    double doubleValue;
+    try  {
+        parser()
+        .addOptional("string", 's', stringValue, "some description")
+    //            .addOptional("int", 'i', intValue,"some description")
+    //            .addOptional("double", 'd', doubleValue, "some description")
+        .parse(argc, argv)
+        .dump();
+    }
+    catch ( std::exception & e )
+    {
+        std::cout << "error" << e.what();
+    };
 
+
+
+    QCOMPARE(stringValue, "test_value");
+    QCOMPARE(intValue, 42);
+    QCOMPARE(doubleValue, 42.42);
     QVERIFY(true);
 }
 

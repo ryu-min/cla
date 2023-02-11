@@ -2,6 +2,7 @@
 
 #include "argument_description.h"
 
+#include <functional>
 #include <iostream>
 #include <string>
 #include <map>
@@ -37,6 +38,7 @@ namespace cla {
 
         parser & addOptional( const std::string & longName,
                               char shortName,
+                              std::string & valueToStore,
                               const std::string & description )
         {
             if ( isLongNameRegistered(longName) )
@@ -52,6 +54,57 @@ namespace cla {
             else
             {
                 m_registeredArgs.insert( ArgumentDesctiption { longName, shortName, false, description} );
+                m_stringValueStorage.emplace(longName, std::reference_wrapper<std::string>(valueToStore));
+            }
+            return *this;
+        }
+
+
+        parser & addOptional( const std::string & longName,
+                              char shortName,
+                              int & valueToStore,
+                              const std::string & description )
+        {
+            if ( isLongNameRegistered(longName) )
+            {
+                std::cout << "argument with long name " << std::string(longName) << " already registered" << std::endl;
+                exit(-1);
+            }
+            else if ( isShortNameRegistered(shortName) )
+            {
+                std::cout << "argument with short name " << shortName << " already registered" << std::endl;
+                exit(-1);
+            }
+            else
+            {
+                m_registeredArgs.insert( ArgumentDesctiption { longName, shortName, false, description} );
+                m_intValueStorage.emplace(longName, std::reference_wrapper<int>(valueToStore));
+
+            }
+            return *this;
+        }
+
+
+        parser & addOptional( const std::string & longName,
+                              char shortName,
+                              double & valueToStore,
+                              const std::string & description )
+        {
+            if ( isLongNameRegistered(longName) )
+            {
+                std::cout << "argument with long name " << std::string(longName) << " already registered" << std::endl;
+                exit(-1);
+            }
+            else if ( isShortNameRegistered(shortName) )
+            {
+                std::cout << "argument with short name " << shortName << " already registered" << std::endl;
+                exit(-1);
+            }
+            else
+            {
+                m_registeredArgs.insert( ArgumentDesctiption { longName, shortName, false, description} );
+                m_doubleValueStorage.emplace(longName, std::reference_wrapper<double>(valueToStore));
+
             }
             return *this;
         }
@@ -117,6 +170,8 @@ namespace cla {
                             if ( isLongNameRegistered( currentArgName ) )
                             {
                                 m_parsedNamedArgs[currentArgName] =  currentString;
+                                storeValue(currentArgName, currentString);
+                                std::cout << "value stored" << std::endl;
                             }
                             else
                             {
@@ -136,7 +191,9 @@ namespace cla {
                             char shortName = currentArgName[0];
                             if ( isShortNameRegistered( shortName ) )
                             {
-                                m_parsedNamedArgs[shortNameToLong( shortName )] = currentString;
+                                const std::string fullArgName = shortNameToLong( shortName );
+                                m_parsedNamedArgs[fullArgName] = currentString;
+                                storeValue( fullArgName, currentString );
                             }
                             else
                             {
@@ -225,14 +282,83 @@ namespace cla {
             return result;
         }
 
+        void storeValue( const std::string & fullArgName, const std::string & value )
+        {
+            std::cout << "store value with" << fullArgName << " " << value << std::endl;
+            if ( m_stringValueStorage.count(fullArgName) )
+            {
+                std::cout << "before call find" << std::endl;
+                m_stringValueStorage.find(fullArgName)->second.get() = value;
+                std::cout << "after call find" << std::endl;
+                return;
+            }
+            else if ( m_intValueStorage.count(fullArgName) )
+            {
+                int intValue = 0;
+                try
+                {
+                    intValue = std::stoi(value);
+                    m_intValueStorage.find(fullArgName)->second.get() = intValue;
+                    return;
+                }
+                catch(const std::invalid_argument & ex)
+                {
+                    std::cout << "can't convert " << value << " to integer value" << std::endl;
+                    exit(-1);
+                }
+                catch( const std::out_of_range & ex)
+                {
+                    std::cout << "value " << value << " is to large to be stored now" << std::endl;
+                }
+                return;
+            }
+            else if ( m_doubleValueStorage.count(fullArgName) )
+            {
+                double doubleValue = 0;
+                try
+                {
+                    doubleValue = std::stod(value);
+                    m_doubleValueStorage.find(fullArgName)->second.get() = doubleValue;
+                    return;
+                }
+                catch(const std::invalid_argument & ex)
+                {
+                    std::cout << "can't convert " << value << " to double value" << std::endl;
+                    exit(-1);
+                }
+                catch( const std::out_of_range & ex)
+                {
+                    std::cout << "value " << value << " is to large to be stored now" << std::endl;
+                }
+                return;
+            }
+
+            assert( false );
+            return;
+        }
+
     private:
-        /**
-         * @brief m_parsedNamedArgs longArgName -> argValue
-         */
-        std::unordered_map<std::string, std::string> m_parsedNamedArgs;
+
         std::set<std::string> m_parsedPositionalArgs;
-        std::unordered_set<ArgumentDesctiption> m_registeredArgs;
         std::set<PositionalArgumentDescription> m_registeredPositionalArgs;
+
+        std::unordered_map<std::string, std::string> m_parsedNamedArgs;
+        std::unordered_set<ArgumentDesctiption> m_registeredArgs;
+
+        /**
+         * @brief m_stringValueStorage - full arg name -> &string to set arg value
+         */
+        std::unordered_map<std::string, std::reference_wrapper<std::string> > m_stringValueStorage;
+
+        /**
+         * @brief m_stringValueStorage - full arg name -> &string to set arg value
+         */
+        std::unordered_map<std::string, std::reference_wrapper<int> > m_intValueStorage;
+
+        /**
+         * @brief m_stringValueStorage - full arg name -> &string to set arg value
+         */
+        std::unordered_map<std::string, std::reference_wrapper<double> > m_doubleValueStorage;
     };
 }
 
