@@ -224,7 +224,7 @@ namespace cla {
                             }
                             else
                             {
-                                std::cout << "detected unregistered argument with long name" << currentArgName << std::endl;
+                                std::cout << "detected unregistered argument with long name " << currentArgName << std::endl;
                                 exit(-1);
                             }
                             state = ParsingState::READ_ARG_NAME;
@@ -256,6 +256,7 @@ namespace cla {
                 index++;
                 continue;
             }
+            checkRequiredArgs();
             return *this;
         }
 
@@ -382,6 +383,31 @@ namespace cla {
             }
             assert( false );
             return;
+        }
+
+        void checkRequiredArgs()
+        {
+            std::vector<std::string> requiredArgNames;
+            for ( const ArgumentDesctiption & argDescription : m_registeredArgs )
+            {
+                if ( argDescription.required )
+                {
+                    requiredArgNames.push_back( argDescription.argName );
+                }
+            }
+            bool requiredArgNotDetected = false;
+            for ( const std::string & requiredArgName : requiredArgNames )
+            {
+                if ( m_parsedNamedArgs.count(requiredArgName) == 0 )
+                {
+                    std::cout << "required arg" << requiredArgName << " not detected " << std::endl;
+                    requiredArgNotDetected = true;
+                }
+            }
+            if ( requiredArgNotDetected )
+            {
+                exit(-1);
+            }
         }
 
     private:
