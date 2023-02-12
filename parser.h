@@ -129,8 +129,8 @@ namespace cla {
         }
 
 
-        parser & parse( int argc, const char ** argv ) {
-
+        parser & parse( int argc, const char ** argv )
+        {
             int index = 0;
             ParsingState state = ParsingState::READ_ARG_NAME;
             std::string currentArgName;
@@ -171,7 +171,6 @@ namespace cla {
                             {
                                 m_parsedNamedArgs[currentArgName] =  currentString;
                                 storeValue(currentArgName, currentString);
-                                std::cout << "value stored" << std::endl;
                             }
                             else
                             {
@@ -284,12 +283,9 @@ namespace cla {
 
         void storeValue( const std::string & fullArgName, const std::string & value )
         {
-            std::cout << "store value with" << fullArgName << " " << value << std::endl;
             if ( m_stringValueStorage.count(fullArgName) )
             {
-                std::cout << "before call find" << std::endl;
                 m_stringValueStorage.find(fullArgName)->second.get() = value;
-                std::cout << "after call find" << std::endl;
                 return;
             }
             else if ( m_intValueStorage.count(fullArgName) )
@@ -309,6 +305,7 @@ namespace cla {
                 catch( const std::out_of_range & ex)
                 {
                     std::cout << "value " << value << " is to large to be stored now" << std::endl;
+                    exit(-1);
                 }
                 return;
             }
@@ -329,6 +326,7 @@ namespace cla {
                 catch( const std::out_of_range & ex)
                 {
                     std::cout << "value " << value << " is to large to be stored now" << std::endl;
+                    exit(-1);
                 }
                 return;
             }
