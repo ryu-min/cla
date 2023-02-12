@@ -79,7 +79,6 @@ namespace cla {
             {
                 m_registeredArgs.insert( ArgumentDesctiption { longName, shortName, false, description} );
                 m_intValueStorage.emplace(longName, std::reference_wrapper<int>(valueToStore));
-
             }
             return *this;
         }
@@ -111,22 +110,73 @@ namespace cla {
 
         parser & addRequired( const std::string & longName,
                               char shortName,
+                              std::string & valueToStore,
                               const std::string & description )
         {
-            if ( isLongNameRegistered(longName) ) {
+            if ( isLongNameRegistered(longName) )
+            {
                 std::cout << "argument with long name " << std::string(longName) << " already registered" << std::endl;
                 exit(-1);
             }
-            else  if ( isShortNameRegistered(shortName) )
+            else if ( isShortNameRegistered(shortName) )
+            {
+                std::cout << "argument with short name " << shortName << " already registered" << std::endl;
+                exit(-1);
+            }
+            else
+            {
+                m_registeredArgs.insert( ArgumentDesctiption { longName, shortName, true, description} );
+                m_stringValueStorage.emplace(longName, std::reference_wrapper<std::string>(valueToStore));
+            }
+            return *this;
+        }
+
+
+        parser & addRequired( const std::string & longName,
+                              char shortName,
+                              int & valueToStore,
+                              const std::string & description )
+        {
+            if ( isLongNameRegistered(longName) )
+            {
+                std::cout << "argument with long name " << std::string(longName) << " already registered" << std::endl;
+                exit(-1);
+            }
+            else if ( isShortNameRegistered(shortName) )
+            {
+                std::cout << "argument with short name " << shortName << " already registered" << std::endl;
+                exit(-1);
+            }
+            else
+            {
+                m_registeredArgs.insert( ArgumentDesctiption { longName, shortName, true, description} );
+                m_intValueStorage.emplace(longName, std::reference_wrapper<int>(valueToStore));
+            }
+            return *this;
+        }
+
+        parser & addRequired( const std::string & longName,
+                              char shortName,
+                              double & valueToStore,
+                              const std::string & description )
+        {
+            if ( isLongNameRegistered(longName) )
+            {
+                std::cout << "argument with long name " << std::string(longName) << " already registered" << std::endl;
+                exit(-1);
+            }
+            else if ( isShortNameRegistered(shortName) )
             {
                 std::cout << "argument with short name " << shortName << " already registered" << std::endl;
                 exit(-1);
             }
             else {
                 m_registeredArgs.insert( ArgumentDesctiption { longName, shortName, true, description} );
+                m_doubleValueStorage.emplace(longName, std::reference_wrapper<double>(valueToStore));
             }
             return *this;
         }
+
 
 
         parser & parse( int argc, const char ** argv )
@@ -330,7 +380,6 @@ namespace cla {
                 }
                 return;
             }
-
             assert( false );
             return;
         }
