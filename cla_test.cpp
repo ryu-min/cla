@@ -1,6 +1,6 @@
 #include <QtTest>
 
-#include "parser.h"
+#include "cla/parser.h"
 
 using namespace cla;
 
