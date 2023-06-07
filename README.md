@@ -1,4 +1,4 @@
-# Header-only Library for Command Line Argument Parsing (Under Development)
+# CLA - Header-only Library for Command Line Argument Parsing (Under Development)
 
 ## Library description
 This is a header-only library for parsing command line arguments in C++. It provides an easy-to-use interface for registering and accessing command line arguments
